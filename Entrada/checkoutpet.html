@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <style>
+        /* Estilização Página */
+        * {
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #checkout-body {
+            background-color: #f3f3f3;
+            color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .carrinho {
+            background-color: #fff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        #dados-tutor {
+            background-color: #fff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h2 {
+            font-weight: 600;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input,
+        select {
+            margin-top: 15px;
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .btn-enviar-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-submit {
+            background-color: #ff725e;
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .btn-submit:hover {
+            background-color: #ff5636;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body id="checkout-body">
+    <div class="carrinho">
+        <h3>Carrinho de Compras</h3>
+        <ul id="carrinho-list"></ul>
+        <div class="total" id="total-price">Total: R$ 0,00</div>
+    </div>
+    <div id="dados-tutor">
+        <h2>Informações Pessoais</h2>
+        <form id="form-checkout" onsubmit="return finalizarPedido(event)">
+            <input type="text" name="nome_cliente" placeholder="Nome Completo" required>
+            <input type="email" name="email_cliente" placeholder="Email" required>
+            <input type="text" name="telefone_cliente" placeholder="Telefone" required>
+            <input type="text" name="end_cliente" placeholder="Endereço" required>
+            <br><br>
+
+            <h2>Forma de Pagamento</h2>
+            <select name="forma_pagamento" id="forma_pagamento" required onchange="exibirCamposPagamento()">
+                <option value="">Selecione uma forma de pagamento</option>
+                <option value="cartao_credito">Cartão de Crédito</option>
+                <option value="cartao_debito">Cartão de Débito</option>
+                <option value="pix">Pix</option>
+            </select>
+
+            <div id="cartao_credito_fields" class="hidden">
+                <input type="text" name="nome_cartao" placeholder="Nome Completo" required>
+                <input type="text" name="cpf_cartao" placeholder="CPF" required>
+                <input type="text" name="numero_cartao" placeholder="Número do Cartão (xxxx xxxx xxxx xxxx)" maxlength="19" pattern="\d{4} \d{4} \d{4} \d{4}" required>
+                <input type="text" name="validade_cartao" placeholder="Validade (MM/AAAA)" maxlength="7" pattern="\d{2}/\d{4}" required>
+                <input type="text" name="codigo_seguranca" placeholder="Código de Segurança" maxlength="3" pattern="\d{3}" required>
+            </div>
+
+            <div id="cartao_debito_fields" class="hidden">
+                <input type="text" name="nome_cartao_debito" placeholder="Nome Completo" required>
+                <input type="text" name="cpf_cartao_debito" placeholder="CPF" required>
+                <input type="text" name="banco" placeholder="Banco" required>
+                <input type="text" name="agencia" placeholder="Agência (xxxx-x)" pattern="\d{4}-\d{1}" required>
+                <input type="text" name="conta_corrente" placeholder="Conta Corrente (xxxxx-x)" pattern="\d{5}-\d{1}" required>
+            </div>
+
+            <div id="pix_fields" class="hidden">
+                <p>QR Code para pagamento com Pix:</p>
+                <img src="./qrcode.png" alt="QR Code Pix" height="150" width="150">
+            </div>
+
+            <div class="btn-enviar-container">
+                <!-- Adicionando o onClick aqui -->
+                <button type="submit" class="btn-submit" onclick="finalizarPedido(event); return false;">Finalizar Pedido</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        window.onload = function () {
+            const carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+            const total = localStorage.getItem('total') || '0.00';
+
+            const carrinhoList = document.getElementById('carrinho-list');
+            const totalPrice = document.getElementById('total-price');
+
+            carrinhoList.innerHTML = '';
+            carrinho.forEach(item => {
+                const li = document.createElement('li');
+                li.innerText = `${item.servico} - R$ ${item.preco.toFixed(2)}`;
+                carrinhoList.appendChild(li);
+            });
+
+            totalPrice.innerText = `Total: R$ ${total}`;
+        };
+
+        function exibirCamposPagamento() {
+            const formaPagamento = document.getElementById('forma_pagamento').value;
+            document.getElementById('cartao_credito_fields').classList.add('hidden');
+            document.getElementById('cartao_debito_fields').classList.add('hidden');
+            document.getElementById('pix_fields').classList.add('hidden');
+
+            if (formaPagamento === 'cartao_credito') {
+                document.getElementById('cartao_credito_fields').classList.remove('hidden');
+            } else if (formaPagamento === 'cartao_debito') {
+                document.getElementById('cartao_debito_fields').classList.remove('hidden');
+            } else if (formaPagamento === 'pix') {
+                document.getElementById('pix_fields').classList.remove('hidden');
+            }
+        }
+
+        function finalizarPedido(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+      
+            window.location.href = 'agradecimento.html';
+        }
+
+    </script>
+</body>
+
+</html>

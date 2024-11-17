@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <style>
+        /* Estilização da Página */
+        * {
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #cad-body {
+            background-color: #f3f3f3;
+            color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .pg-cadastro {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            font-weight: 600;
+            font-size: 26px;
+            color: #ff3e27;
+            margin-bottom: 25px;
+        }
+
+        .cadastro-input {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .cadastro-input label {
+            text-align: left;
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .cadastro-input input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .btn-cadastrar {
+            background-color: #ff725e;
+            color: #fff;
+            padding: 14px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-cadastrar:hover {
+            background-color: #ff3e27;
+        }
+
+        .login-link {
+            display: inline-block;
+            color: #007BFF;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+
+        .login-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body id="cad-body">
+    <div class="pg-cadastro">
+        <h2>Cadastro de Cliente</h2>
+        <form onsubmit="handleRegister(event)">
+            <div class="cadastro-input">
+                <label for="username">Nome de Usuário</label>
+                <input type="text" id="username" required>
+                
+                <label for="password">Senha</label>
+                <input type="password" id="password" required>
+                
+                <label for="confirm_password">Confirmar Senha</label>
+                <input type="password" id="confirm_password" required>
+            </div>
+            <button type="submit" class="btn-cadastrar">Cadastrar</button>
+            <a href="login.html" class="login-link">Já tem uma conta? Faça login</a>
+        </form>
+    </div>
+
+    <script>
+        function handleRegister(event) {
+            event.preventDefault();
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirm_password").value;
+
+            if (password !== confirmPassword) {
+                alert('As senhas não coincidem!');
+                return;
+            }
+
+            const newUser = { username, password };
+            localStorage.setItem("user", JSON.stringify(newUser));
+            alert("Cadastro realizado com sucesso!");
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <style>
+        /* Estilização Página */
+        * {
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #checkout-body {
+            background-color: #f3f3f3;
+            color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .carrinho {
+            background-color: #fff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        #dados-tutor {
+            background-color: #fff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        h2 {
+            font-weight: 600;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input,
+        select {
+            margin-top: 15px;
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .btn-enviar-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-submit {
+            background-color: #ff725e;
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .btn-submit:hover {
+            background-color: #ff5636;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+
+            .carrinho,
+            #dados-tutor {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .btn-submit {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body id="checkout-body">
+    <div class="carrinho">
+        <h3>Carrinho de Compras</h3>
+        <ul id="carrinho-checkout-list"></ul>
+        <div>
+            Total: R$ <span id="total-carrinho-checkout">0.00</span>
+        </div>
+    </div>
+
+    <div id="dados-tutor">
+        <h2>Informações Pessoais</h2>
+        <form id="form-checkout" onsubmit="return validarFormulario(event)">
+            <input type="text" name="nome_cliente" placeholder="Nome Completo" required>
+            <input type="email" name="email_cliente" placeholder="Email" required>
+            <input type="text" name="telefone_cliente" placeholder="Telefone" required>
+            <input type="text" name="end_cliente" placeholder="Endereço de Entrega" required>
+            <br><br>
+
+            <h2>Forma de Pagamento</h2>
+            <select name="forma_pagamento" id="forma_pagamento" required onchange="exibirCamposPagamento()">
+                <option value="">Selecione uma forma de pagamento</option>
+                <option value="cartao_credito">Cartão de Crédito</option>
+                <option value="cartao_debito">Cartão de Débito</option>
+                <option value="pix">Pix</option>
+            </select>
+
+            <div id="cartao_credito_fields" class="hidden">
+                <input type="text" name="nome_cartao" placeholder="Nome Completo" required>
+                <input type="text" name="cpf_cartao" placeholder="CPF" required>
+                <input type="text" name="numero_cartao" placeholder="Número do Cartão (xxxx xxxx xxxx xxxx)"
+                    maxlength="19" pattern="\d{4} \d{4} \d{4} \d{4}" required>
+                <input type="text" name="validade_cartao" placeholder="Validade (MM/AAAA)" maxlength="7"
+                    pattern="\d{2}/\d{4}" required>
+                <input type="text" name="codigo_seguranca" placeholder="Código de Segurança" maxlength="3"
+                    pattern="\d{3}" required>
+
+                <!-- Novos campos para parcelamento -->
+                <label for="parcelamento">Número de Parcelas:</label>
+                <select name="parcelamento" id="parcelamento" onchange="calcularParcelas()">
+                    <option value="1">1x sem juros</option>
+                    <option value="2">2x</option>
+                    <option value="3">3x</option>
+                    <option value="4">4x</option>
+                    <option value="5">5x</option>
+                    <option value="6">6x</option>
+                </select>
+                <div id="valor-parcela"></div>
+            </div>
+
+            <div id="cartao_debito_fields" class="hidden">
+                <input type="text" name="nome_cartao_debito" placeholder="Nome Completo" required>
+                <input type="text" name="cpf_cartao_debito" placeholder="CPF" required>
+                <input type="text" name="banco" placeholder="Banco" required>
+                <input type="text" name="agencia" placeholder="Agência (xxxx-x)" pattern="\d{4}-\d{1}" required>
+                <input type="text" name="conta_corrente" placeholder="Conta Corrente (xxxxx-x)" pattern="\d{5}-\d{1}"
+                    required>
+            </div>
+
+            <div id="pix_fields" class="hidden">
+                <p>QR Code para pagamento com Pix:</p>
+                <img src="../Entrada/qrcode.png" alt="QR Code Pix" height="150" width="150">
+            </div>
+
+            <div class="btn-enviar-container">
+                <button type="submit" class="btn-submit" onclick="finalizarPedido(event); return false;">Finalizar Pedido</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Função para exibir os itens do carrinho no checkout
+        function exibirCarrinhoCheckout() {
+            let carrinhoLoja = JSON.parse(localStorage.getItem("carrinho-loja"));
+            let carrinhoList = document.getElementById('carrinho-checkout-list');
+            let total = 0;
+
+            // Se não houver carrinho, avisa o usuário
+            if (!carrinhoLoja) {
+                alert("Carrinho vazio ou expirado.");
+                return;
+            }
+
+            // Limpa a lista de itens do carrinho
+            carrinhoList.innerHTML = '';
+
+            // Exibe os itens do carrinho
+            carrinhoLoja.forEach(item => {
+                let li = document.createElement('li');
+                li.innerHTML = `${item.nome} - ${item.quantidade} x R$ ${item.preco.toFixed(2)}`;
+                carrinhoList.appendChild(li);
+                total += item.preco * item.quantidade;
+            });
+
+            // Exibe o total
+            document.getElementById('total-carrinho-checkout').innerText = total.toFixed(2);
+        }
+
+        // Carrega o carrinho ao carregar a página
+        window.onload = exibirCarrinhoCheckout;
+
+        function validarFormulario(event) {
+            const nome = document.forms["form-checkout"]["nome_cliente"].value;
+            const email = document.forms["form-checkout"]["email_cliente"].value;
+            const telefone = document.forms["form-checkout"]["telefone_cliente"].value;
+            const endereco = document.forms["form-checkout"]["end_cliente"].value;
+
+            if (nome === "" || email === "" || telefone === "" || endereco === "") {
+                alert("Por favor, preencha todos os campos.");
+                event.preventDefault();
+                return false;
+            }
+            return true;
+        }
+
+        function exibirCamposPagamento() {
+            const formaPagamento = document.getElementById('forma_pagamento').value;
+            document.getElementById('cartao_credito_fields').classList.add('hidden');
+            document.getElementById('cartao_debito_fields').classList.add('hidden');
+            document.getElementById('pix_fields').classList.add('hidden');
+
+            if (formaPagamento === 'cartao_credito') {
+                document.getElementById('cartao_credito_fields').classList.remove('hidden');
+            } else if (formaPagamento === 'cartao_debito') {
+                document.getElementById('cartao_debito_fields').classList.remove('hidden');
+            } else if (formaPagamento === 'pix') {
+                document.getElementById('pix_fields').classList.remove('hidden');
+            }
+        }
+
+        function calcularParcelas() {
+            const totalCompra = parseFloat(document.getElementById('total-carrinho-checkout').innerText);
+            const parcelas = document.getElementById('parcelamento').value;
+            const valorParcela = (totalCompra / parcelas).toFixed(2);
+
+            document.getElementById('valor-parcela').innerText = `Valor de cada parcela: R$ ${valorParcela}`;
+        }
+
+        function finalizarPedido(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+
+            // Aqui você pode adicionar qualquer validação adicional ou processamento de pagamento
+            alert('Pedido finalizado com sucesso!');
+            // Redireciona para a página de agradecimento usando assign
+            window.location.assign('agradecimento-loja.html');
+        }
+    </script>
+</body>
+
+</html>

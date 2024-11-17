@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendamento de Consulta</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f3f3f3;
+            color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: auto;
+            flex-direction: column;
+        }
+
+        .agenda-input {
+            background-color: #fff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h2 {
+            font-weight: 600;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .agenda-input label {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 5px;
+            display: inline-block;
+            text-align: left;
+            width: 100%;
+        }
+
+        .agenda-input input,
+        .agenda-input select {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .agenda-input button {
+            padding: 12px 20px;
+            background-color: #ff725e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .agenda-input button:hover {
+            background-color: #ff5636;
+        }
+
+        .agenda-input select {
+            padding: 15px;
+        }
+
+        .agenda-input input[type="text"],
+        .agenda-input input[type="number"] {
+            padding-left: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="agenda-input">
+    <input type="text" name="nome_pet" placeholder="Nome do Pet" required>
+    <input type="text" name="raca_pet" placeholder="Raça do Pet" required>
+    <input type="number" name="idade_pet" placeholder="Idade do Pet (anos)" required>
+
+    <!-- Especialidade -->
+    <label for="especialidade-select">Especialidade:</label>
+    <select id="especialidade-select" name="especialidade" required>
+        <option value="">Selecione a especialidade</option>
+        <option value="consulta_rotina">Consulta de Rotina</option>
+        <option value="vacina">Vacinação</option>
+        <option value="castracao">Castração</option>
+        <option value="consulta_pre_cirurgica">Consulta pré Cirúrgica</option>
+        <option value="consulta_pos_cirurgica">Consulta pós Cirúrgica</option>
+        <option value="cirurgia">Cirúrgia</option>
+        <option value="urgencia_emergencia">Urgência/Emergência</option>
+    </select>
+    
+    <!-- Veterinário -->
+    <label for="veterinario-select">Veterinário:</label>
+    <select id="veterinario-select" name="veterinario" required>
+        <option value="">Selecione um veterinário</option>
+        <!-- Veterinários serão preenchidos via JavaScript -->
+    </select>
+
+    <!-- Data da consulta -->
+    <label for="data-consulta">Data da Consulta:</label>
+    <select id="data-consulta" name="data_consulta" required>
+        <option value="">Selecione uma data</option>
+        <!-- Exemplo de datas disponíveis -->
+    </select>
+
+    <!-- Hora da consulta -->
+    <label for="hora-consulta">Hora da Consulta:</label>
+    <select id="hora-consulta" name="hora_consulta" required>
+        <option value="">Selecione o horário</option>
+        <!-- Exemplo de horários disponíveis -->
+    </select>
+    
+    <button type="submit" class="btn-submit-agenda" onclick="finalizarConsulta(event); return false;">Agendar Consulta</button>
+</div>
+
+<script>
+    // Dados de veterinários por especialidade
+    const veterinariosPorEspecialidade = {
+        "consulta_rotina": "Dra. Leticia",
+        "vacina": "Dr. Daniel",
+        "castracao": "Dra. Cintia",
+        "consulta_pre_cirurgica": "Dr. Gustavo",
+        "consulta_pos_cirurgica": "Dr. Felipe",
+        "cirurgia": "Dr. Felipe",
+        "urgencia_emergencia": "Dr. Luciano"
+    };
+
+    // Função para atualizar a lista de veterinários com base na especialidade selecionada
+    function atualizarVeterinarios() {
+        const especialidadeSelect = document.getElementById("especialidade-select");
+        const veterinarioSelect = document.getElementById("veterinario-select");
+        
+        const especialidadeSelecionada = especialidadeSelect.value;
+        
+        // Limpa as opções de veterinário
+        veterinarioSelect.innerHTML = '<option value="">Selecione um veterinário</option>';
+
+        // Se uma especialidade for selecionada, atualiza a lista de veterinários
+        if (especialidadeSelecionada && veterinariosPorEspecialidade[especialidadeSelecionada]) {
+            const veterinario = veterinariosPorEspecialidade[especialidadeSelecionada];
+            const option = document.createElement("option");
+            option.value = veterinario;
+            option.textContent = veterinario;
+            veterinarioSelect.appendChild(option);
+        }
+    }
+
+    // Chama a função para atualizar os veterinários sempre que a especialidade for alterada
+    document.getElementById("especialidade-select").addEventListener("change", atualizarVeterinarios);
+
+    // Exemplo de dados de datas e horários disponíveis
+    const disponibilidade = {
+        "2024-11-07": ["09:00", "10:00", "14:00"],
+        "2024-11-08": ["10:00", "11:00", "15:00"],
+        "2024-11-09": ["09:00", "11:00", "16:00"]
+    };
+
+    // Função para atualizar a lista de datas
+    function atualizarDatas() {
+        const dataSelect = document.getElementById("data-consulta");
+        for (let data in disponibilidade) {
+            const option = document.createElement("option");
+            option.value = data;
+            option.textContent = data.split("-").reverse().join("/");
+            dataSelect.appendChild(option);
+        }
+    }
+
+    // Função para atualizar os horários com base na data selecionada
+    function atualizarHorarios() {
+        const horaSelect = document.getElementById("hora-consulta");
+        const dataSelecionada = document.getElementById("data-consulta").value;
+
+        // Limpa as opções de hora
+        horaSelect.innerHTML = '<option value="">Selecione o horário</option>';
+
+        if (dataSelecionada && disponibilidade[dataSelecionada]) {
+            const horarios = disponibilidade[dataSelecionada];
+            horarios.forEach(hora => {
+                const option = document.createElement("option");
+                option.value = hora;
+                option.textContent = hora;
+                horaSelect.appendChild(option);
+            });
+        }
+    }
+
+    // Chama a função de atualizar datas ao carregar a página
+    window.onload = function() {
+        atualizarDatas();
+    };
+
+    // Chama a função de atualizar horários quando a data for alterada
+    document.getElementById("data-consulta").addEventListener("change", atualizarHorarios);
+
+    function finalizarConsulta(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+
+            // Aqui você pode adicionar qualquer validação adicional ou processamento de pagamento
+            alert('Consulta Agendada com Sucesso!');
+            // Redireciona para a página de agradecimento usando assign
+            window.location.assign('agenda_agradecimento.html');
+        }
+</script>
+</body>
+</html>

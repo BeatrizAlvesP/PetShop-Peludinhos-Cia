@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja de Produtos</title>
+    <style>
+        /* Estilização da Página */
+        * {
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #loja-body {
+            background-color: #f3f3f3;
+            color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: auto;
+            flex-direction: column;
+        }
+
+        .pg-loja {
+            background-color: #fff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        h2 {
+            font-weight: 600;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .produtos {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .produto {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        .produto img {
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        .produto h3 {
+            font-size: 18px;
+            margin-top: 10px;
+            color: #333;
+        }
+
+        .produto p {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        .quantidade-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .quantidade-container button {
+            background-color: #ff5636;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .quantidade-container button:hover {
+            background-color: #ff3e27;
+        }
+
+        .quantidade-container input {
+            width: 40px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            margin: 0 5px;
+        }
+
+        .produto button {
+            background-color: #ff5636;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .produto button:hover {
+            background-color: #ff3e27;
+        }
+
+        .carrinho-loja {
+            margin-top: 20px;
+            width: 100%;
+            text-align: left;
+        }
+
+        .carrinho-loja h3 {
+            margin-bottom: 10px;
+        }
+
+        .carrinho-loja ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .carrinho-loja li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        .carrinho-loja button {
+            background-color: #ff5636;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .carrinho-loja button:hover {
+            background-color: #ff3e27;
+        }
+
+        .total {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .btn-enviar-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-submit {
+            background-color: #ff725e;
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #ff5636;
+        }
+    </style>
+</head>
+
+<body id="loja-body">
+    <div class="pg-loja">
+        <h2>Loja de Produtos</h2>
+        <div class="produtos">
+            <!-- Produto 1 -->
+            <div class="produto">
+                <img src="./img/shampoo-cachorro.png" alt="Shampoo Pet" height="150" width="150">
+                <h3>Shampoo Pet</h3>
+                <p>R$ 25,00</p>
+                <div class="quantidade-container">
+                    <button onclick="alterarQuantidadeProduto('shampoo-pet', -1)">-</button>
+                    <input id="shampoo-pet" type="number" value="1" min="1" />
+                    <button onclick="alterarQuantidadeProduto('shampoo-pet', 1)">+</button>
+                </div>
+                <button
+                    onclick="adicionarAoCarrinho('Shampoo Pet', 25.00, document.getElementById('shampoo-pet').value)">Adicionar
+                    ao Carrinho</button>
+            </div>
+            <!-- Produto 2 -->
+            <div class="produto">
+                <img src="./img/condicionador-cachorro.png" alt="Condicionador Pet" height="150" width="150">
+                <h3>Condicionador Pet</h3>
+                <p>R$ 35,00</p>
+                <div class="quantidade-container">
+                    <button onclick="alterarQuantidadeProduto('condicionador-pet', -1)">-</button>
+                    <input id="condicionador-pet" type="number" value="1" min="1" />
+                    <button onclick="alterarQuantidadeProduto('condicionador-pet', 1)">+</button>
+                </div>
+                <button
+                    onclick="adicionarAoCarrinho('Condicionador Pet', 35.00, document.getElementById('condicionador-pet').value)">Adicionar
+                    ao Carrinho</button>
+            </div>
+            <!-- Produto 3 -->
+            <div class="produto">
+                <img src="./img/perfume-pet.png" alt="Perfume Pet" height="150" width="150">
+                <h3>Perfume Pet</h3>
+                <p>R$ 45,00</p>
+                <div class="quantidade-container">
+                    <button onclick="alterarQuantidadeProduto('perfume-pet', -1)">-</button>
+                    <input id="perfume-pet" type="number" value="1" min="1" />
+                    <button onclick="alterarQuantidadeProduto('perfume-pet', 1)">+</button>
+                </div>
+                <button
+                    onclick="adicionarAoCarrinho('Perfume Pet', 45.00, document.getElementById('perfume-pet').value)">Adicionar
+                    ao Carrinho</button>
+            </div>
+            <!-- Produto 4 -->
+            <div class="produto">
+                <img src="./img/ração-pet.png" alt="Ração" height="150" width="150">
+                <h3>Ração</h3>
+                <p>R$ 30,00</p>
+                <div class="quantidade-container">
+                    <button onclick="alterarQuantidadeProduto('racao', -1)">-</button>
+                    <input id="racao" type="number" value="1" min="1" />
+                    <button onclick="alterarQuantidadeProduto('racao', 1)">+</button>
+                </div>
+                <button
+                    onclick="adicionarAoCarrinho('Ração', 30.00, document.getElementById('racao').value)">Adicionar
+                    ao Carrinho</button>
+            </div>
+            <!-- Produto 5 -->
+            <div class="produto">
+                <img src="./img/comedouro-bebedouro.png" alt="Comedouro & Bebedouro" height="150" width="150">
+                <h3>Comedouro & Bebedouro</h3>
+                <p>R$ 55,00</p>
+                <div class="quantidade-container">
+                    <button onclick="alterarQuantidadeProduto('comedouro-bebedouro', -1)">-</button>
+                    <input id="comedouro-bebedouro" type="number" value="1" min="1" />
+                    <button onclick="alterarQuantidadeProduto('comedouro-bebedouro', 1)">+</button>
+                </div>
+                <button
+                    onclick="adicionarAoCarrinho('Comedouro & Bebedouro', 55.00, document.getElementById('comedouro-bebedouro').value)">Adicionar
+                    ao Carrinho</button>
+            </div>
+            <!-- Produto 6 -->
+            <div class="produto">
+                <img src="./img/brinquedo-pet.png" alt="Brinquedo Pet" height="150" width="150">
+                <h3>Brinquedo Pet</h3>
+                <p>R$ 60,00</p>
+                <div class="quantidade-container">
+                    <button onclick="alterarQuantidadeProduto('brinquedo-pet', -1)">-</button>
+                    <input id="brinquedo-pet" type="number" value="1" min="1" />
+                    <button onclick="alterarQuantidadeProduto('brinquedo-pet', 1)">+</button>
+                </div>
+                <button
+                    onclick="adicionarAoCarrinho('Brinquedo Pet', 60.00, document.getElementById('brinquedo-pet').value)">Adicionar
+                    ao Carrinho</button>
+            </div>
+        </div>
+
+        <!-- Carrinho -->
+        <div class="carrinho-loja">
+            <h3>Carrinho de Compras</h3>
+            <ul id="carrinho-list">
+                <!-- Itens do carrinho vão aparecer aqui -->
+            </ul>
+            <div class="total">
+                Total: R$ <span id="total-carrinho">0.00</span>
+            </div>
+        </div>
+
+        <div class="btn-enviar-container">
+            <button class="btn-submit" onclick="finalizarCompra()">Finalizar Compra</button>
+        </div>
+    </div>
+
+    <script>
+        let carrinhoLoja = [];
+
+        function alterarQuantidadeProduto(id, incremento) {
+            let quantidadeInput = document.getElementById(id);
+            let quantidade = parseInt(quantidadeInput.value);
+            if (isNaN(quantidade) || quantidade < 1) quantidade = 1;
+            quantidade += incremento;
+            if (quantidade < 1) quantidade = 1;
+            quantidadeInput.value = quantidade;
+        }
+
+        function adicionarAoCarrinho(nomeProduto, preco, quantidade) {
+            let produto = {
+                nome: nomeProduto,
+                preco: preco,
+                quantidade: parseInt(quantidade)
+            };
+            carrinhoLoja.push(produto);
+            exibirCarrinho();
+        }
+
+        function exibirCarrinho() {
+            let carrinhoList = document.getElementById('carrinho-list');
+            let total = 0;
+            carrinhoList.innerHTML = '';
+            carrinhoLoja.forEach(item => {
+                let li = document.createElement('li');
+                li.innerHTML = `${item.nome} - ${item.quantidade} x R$ ${item.preco.toFixed(2)} 
+                <button onclick="removerItemCarrinho('${item.nome}')">Remover</button>`;
+                carrinhoList.appendChild(li);
+                total += item.preco * item.quantidade;
+            });
+            document.getElementById('total-carrinho').innerText = total.toFixed(2);
+        }
+
+        function removerItemCarrinho(nomeProduto) {
+            carrinhoLoja = carrinhoLoja.filter(item => item.nome !== nomeProduto);
+            exibirCarrinho();
+        }
+
+        function finalizarCompra() {
+            if (carrinhoLoja.length === 0) {
+                alert("Seu carrinho está vazio!");
+            } else {
+                // Salva os dados do carrinho no localStorage
+                localStorage.setItem("carrinho-loja", JSON.stringify(carrinhoLoja));
+                // Redireciona para a página de checkout
+                window.location.href = 'checkoutpet-loja.html'; // Nome da página de checkout
+            }
+        }
+    </script>
+</body>
+
+</html>

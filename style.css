@@ -9,20 +9,53 @@ body{
     color: black;
 }
 
-header{
+header {
     background-color: #FF9A6C;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 24px 80px 24px 80px;
-    
+    padding: 20px 50px;
 }
 
-header a{
+header a {
     color: white;
     font-weight: 600;
-    padding: 32px;
+    padding: 10px 20px;
     text-decoration: none;
+    margin-left: 10px; /* Espaço entre os links e os botões */
+}
+
+/* Inicialmente, ambos os botões serão escondidos */
+#loginBtn, #logoutBtn {
+    display: none;
+}
+
+/* Exibe o botão de login quando o usuário não estiver logado */
+#loginBtn.show {
+    display: inline-block;
+}
+
+/* Exibe o botão de logout quando o usuário estiver logado */
+#logoutBtn.show {
+    display: inline-block;
+}
+
+#loginBtn, #logoutBtn {
+    background-color: #FF9A6C; /* Mesma cor do header */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    margin-left: 5px; /* Reduzi o espaço entre os botões */
+}
+
+/* Adicionando efeito de hover para o botão */
+#loginBtn:hover, #logoutBtn:hover {
+    background-color: #ff725e; /* Cor de destaque para hover */
 }
 
 /* Estilização Seção Inicial */
@@ -161,10 +194,23 @@ footer{
     padding: 64px 80px;
 }
 
-.footer img, .footer .titulo{
+.footer .titulo{
     display: block;
     font-weight: 600;
     margin-bottom: 24px;
+
+}
+
+footer div:first-child {
+    display: flex;
+    align-items: center; /* Centraliza verticalmente */
+    gap: 16px; /* Espaçamento entre a imagem e o parágrafo */
+}
+
+footer img {
+    max-width: 100px; /* Ajuste conforme necessário */
+    height: auto;
+    width: 150px;
 
 }
 

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil do Cliente</title>
+    <style>
+        /* Estilização Página */
+        * {
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #perfil-body {
+            background-color: #f3f3f3;
+            color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: auto;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .pg-perfil {
+            background-color: #fff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h2 {
+            font-weight: 600;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #ff3e27; /* Cor dos títulos alterada */
+        }
+
+        #dados-tutor,
+        #dados-pet,
+        #historico-servicos {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background-color: #ff725e; /* Cor do cabeçalho da tabela alterada */
+            color: white;
+            font-weight: bold;
+            padding: 10px;
+            text-align: left;
+            border-radius: 5px;
+        }
+
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+            border-radius: 5px;
+        }
+
+        .total-row {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body id="perfil-body">
+    <!-- Caixa principal de perfil do cliente -->
+    <div class="pg-perfil">
+        <h2>Perfil do Cliente</h2>
+        <hr><br>
+        
+        <section id="perfil-cliente">
+            <h2>Dados do Tutor</h2>
+            <div id="dados-tutor"></div>
+
+            <h2>Dados do Pet</h2>
+            <div id="dados-pet"></div>
+
+            <h2>Histórico de Serviços</h2>
+            <table id="historico-servicos">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Serviço</th>
+                        <th>Forma de Pagamento</th>
+                        <th>Valor (R$)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Verifica se o navegador suporta sessionStorage
+            if (typeof(Storage) === "undefined") {
+                console.error("O navegador não suporta sessionStorage.");
+                alert("O navegador não suporta sessionStorage. Atualize seu navegador.");
+                return;
+            }
+            // Recupera o ID do usuário logado do sessionStorage
+            const loggedUserId = sessionStorage.getItem("loggedUserId");
+            console.log("loggedUserId recuperado:", loggedUserId); // Verificação de depuração
+
+            // Verifica se o usuário está logado
+            if (!loggedUserId) {
+                alert("Você precisa estar logado para ver o perfil.");
+                window.location.href = "login.html";
+                return;
+            } else {
+                console.log("Usuário logado com ID:", loggedUserId);
+            }
+
+            // Carregar dados do tutor
+            const tutorData = JSON.parse(localStorage.getItem('tutorData'));
+            const dadosTutorDiv = document.getElementById('dados-tutor');
+
+            if (tutorData) {
+                dadosTutorDiv.innerHTML = `
+                    <p><strong>Nome:</strong> ${tutorData.nome_cliente || "N/A"}</p>
+                    <p><strong>Email:</strong> ${tutorData.email_cliente || "N/A"}</p>
+                    <p><strong>Telefone:</strong> ${tutorData.telefone_cliente || "N/A"}</p>
+                    <p><strong>Endereço:</strong> ${tutorData.end_cliente || "N/A"}</p>
+                    <p><strong>Forma de Pagamento:</strong> ${tutorData.forma_pagamento || "N/A"}</p>
+                `;
+            } else {
+                dadosTutorDiv.innerHTML = "<p>Dados do tutor não disponíveis.</p>";
+            }
+
+            // Carregar dados do pet
+            const petData = JSON.parse(localStorage.getItem('petData'));
+            const dadosPetDiv = document.getElementById('dados-pet');
+
+            if (petData) {
+                dadosPetDiv.innerHTML = `
+                    <p><strong>Nome do Pet:</strong> ${petData.nome_pet || "N/A"}</p>
+                    <p><strong>Raça:</strong> ${petData.raca_pet || "N/A"}</p>
+                    <p><strong>Idade:</strong> ${petData.idade_pet || "N/A"} anos</p>
+                    <p><strong>Restrição Alimentar:</strong> ${petData.restricao_alimentar || "N/A"}</p>
+                    <p><strong>Detalhes da Restrição:</strong> ${petData.detalhes_restricao || "N/A"}</p>
+                    <p><strong>Alergias:</strong> ${petData.alergias || "N/A"}</p>
+                    <p><strong>Detalhes das Alergias:</strong> ${petData.detalhes_alergia || "N/A"}</p>
+                    <p><strong>Pode Usar Acessórios:</strong> ${petData.acessorios || "N/A"}</p>
+                    <p><strong>Serviço Selecionado:</strong> ${petData.servico || "N/A"}</p>
+                `;
+            } else {
+                dadosPetDiv.innerHTML = "<p>Dados do pet não disponíveis.</p>";
+            }
+
+            // Carregar e exibir o histórico de serviços
+            const historicoServicos = JSON.parse(localStorage.getItem(`historicoServicos_${loggedUserId}`)) || [];
+            const historicoServicosTbody = document.getElementById('historico-servicos').querySelector('tbody');
+            
+            historicoServicosTbody.innerHTML = ""; // Limpa o conteúdo atual
+            let total = 0;
+
+            historicoServicos.forEach(servico => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${servico.data || "N/A"}</td>
+                <td>${servico.servico || "N/A"}</td>
+                <td>${servico.forma_pagamento || "N/A"}</td>
+                <td>R$ ${(servico.valor || 0).toFixed(2)}</td>
+            `;
+            historicoServicosTbody.appendChild(row);
+            });
+
+            // Exibir o total acumulado na última linha da tabela
+            const totalRow = document.createElement('tr');
+            totalRow.className = 'total-row';
+            totalRow.innerHTML = `
+                <td colspan="3" style="text-align: right;"><strong>Total dos Serviços</strong></td>
+                <td><strong>R$ ${total.toFixed(2)}</strong></td>
+            `;
+            historicoServicosTbody.appendChild(totalRow);
+        });
+    </script>
+</body>
+
+</html>
